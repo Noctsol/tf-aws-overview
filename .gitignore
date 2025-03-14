@@ -36,3 +36,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 local_*.tf
+local_secrets.txt
