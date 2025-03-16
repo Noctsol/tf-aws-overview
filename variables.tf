@@ -16,6 +16,6 @@ variable "test_email_2" {
 }
 
 variable "prefix" {
-  type = string
+  type    = string
   default = "tbx"
 }

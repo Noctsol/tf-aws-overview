@@ -1,6 +1,6 @@
 terraform {
   cloud {
-    hostname = "app.terraform.io"
+    hostname     = "app.terraform.io"
     organization = "quiavi"
     # workspaces {
     #   name = "tf-aws-overview-dev"
@@ -11,9 +11,9 @@ terraform {
         repo = "tf-aws-overview"
       }
     }
-  #   workspaces {
-  #     tags = ["megauniquekey"]
-  #   }
-  # }
-}
+    #   workspaces {
+    #     tags = ["megauniquekey"]
+    #   }
+    # }
+  }
 }

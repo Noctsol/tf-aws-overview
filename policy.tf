@@ -1,6 +1,6 @@
 resource "aws_iam_policy" "admins_policy" {
   name        = "admins"
-  path        = "/roles/"  # not sure if its going here
+  path        = "/roles/" # not sure if its going here
   description = "Lets admins access other accounts"
 
   # Terraform's "jsonencode" function converts a
@@ -12,7 +12,7 @@ resource "aws_iam_policy" "admins_policy" {
         Action = [
           "sts:AssumeRole",
         ]
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
           "arn:aws:iam::${aws_organizations_account.testaccount1.id}:role/AdminRole",
           "arn:aws:iam::${aws_organizations_account.testaccount1.id}:role/OrganizationAccountAccessRole",
