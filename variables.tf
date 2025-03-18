@@ -19,3 +19,7 @@ variable "prefix" {
   type    = string
   default = "tbx"
 }
+
+variable "mypublicip" {
+  type = string
+}

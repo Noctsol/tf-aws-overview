@@ -41,7 +41,6 @@ resource "aws_route_table" "this" {
   tags = local.rt_tags
 }
 
-
 output "vpc_id" {
   value = aws_vpc.this.id
 }
