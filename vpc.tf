@@ -27,10 +27,15 @@ resource "aws_vpc" "rootwest" {
 resource "aws_subnet" "rootwest" {
   vpc_id     = aws_vpc.rootwest.id
   cidr_block = "10.0.0.0/22"
+  availability_zone = "us-west-2a"
   tags = {
     Name = "subnetrootwestdefault"
     env  = "dev"
   }
+}
+resource "aws_route_table_association" "rootwest" {
+  subnet_id      = aws_subnet.rootwest.id
+  route_table_id = aws_route_table.rootwest.id
 }
 resource "aws_route_table" "rootwest" {
   vpc_id = aws_vpc.rootwest.id
@@ -87,6 +92,12 @@ resource "aws_route_table" "acct1west2" {
     env  = "dev"
   }
 }
+
+resource "aws_route_table_association" "acct1west2" {
+  provider       = aws.acct1west2
+  subnet_id      = aws_subnet.acct1west2.id
+  route_table_id = aws_route_table.acct1west2.id
+}
 resource "aws_subnet" "acct1west2" {
   provider   = aws.acct1west2
   vpc_id     = aws_vpc.acct1west2.id
@@ -126,6 +137,45 @@ resource "aws_security_group" "acct1west2" {
   }
 }
 
+# To attach public IPs, you need to create an Internet Gateway and set it up
+# EVEN if you are routing through a TGW NAT Gateway
+resource "aws_internet_gateway" "acct1west2_igw" {
+  provider = aws.acct1west2
+  vpc_id   = aws_vpc.acct1west2.id
+  tags = {
+    Name = "acct1west2-IGW"
+  }
+}
+
+resource "aws_subnet" "publicsubnet" {
+  provider   = aws.acct1west2
+  vpc_id     = aws_vpc.acct1west2.id
+  cidr_block = "10.0.132.0/22"
+  tags = {
+    Name = "acct1west2-public-subnet"
+  }
+
+}
+
+resource "aws_route_table" "acct1west2_public_rt" {
+  provider = aws.acct1west2
+  vpc_id   = aws_vpc.acct1west2.id
+  tags = {
+    Name = "acct1west2-public-route-table"
+  }
+}
+resource "aws_route" "acct1west2_public_to_igw" {
+  provider               = aws.acct1west2
+  route_table_id         = aws_route_table.acct1west2_public_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.acct1west2_igw.id
+}
+resource "aws_route_table_association" "acct1west2_public_assoc" {
+  provider       = aws.acct1west2
+  subnet_id      = aws_subnet.publicsubnet.id
+  route_table_id = aws_route_table.acct1west2_public_rt.id
+}
+
 
 
 
@@ -152,6 +202,12 @@ resource "aws_subnet" "acct2west2" {
     Environment = "dev"
   }
 }
+resource "aws_route_table_association" "acct2west2" {
+  provider       = aws.acct2west2
+  subnet_id      = aws_subnet.acct2west2.id
+  route_table_id = module.vpc_acct2west2.route_table_id
+}
+
 resource "aws_security_group" "acct2west2" {
   provider    = aws.acct2west2
   name        = "uw2-prod-default"
